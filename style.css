@@ -834,7 +834,8 @@ section:nth-child(odd) .animate.scroll,
     }
 
     .home-sci{
-        width: 160px;
+        width: 100px;
+        justify-content: space-evenly;
     }
 
     .home-sci a{
