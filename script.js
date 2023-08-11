@@ -45,3 +45,59 @@ window.onscroll = () => {
     menuIcon.classList.remove('bx-x');
     navbar.classList.remove('active');
 }
+
+async function cfSubmitMessage() {
+    var cfvalue = {
+      name: GEBID("cfname").value,
+      email: GEBID("cfemail").value.toLowerCase(),
+      phone_no: GEBID("cfphone").value,
+      subject: GEBID("cfsubject").value,
+      message: GEBID("cfmessage").value,
+    };
+    let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+    
+    if (cfvalue.name === "" || cfvalue.email === "" || cfvalue.phone_no === "" || cfvalue.subject === "" || cfvalue.message === "") {
+        return;
+    } 
+    else if (!emailRegex.test(cfvalue.email)) {
+        return;
+    } else {
+        GEBID("cfbutton").removeAttribute("onclick");
+        GEBID("cfbutton").classList.remove("color");
+        GEBID("cfbutton").classList.add("onclick");
+        GEBID("cfbutton").innerHTML = "Sending...";
+
+        try {
+        var sendmessage = await (
+            await fetch(
+            'https://conform.ukqqdzfj.workers.dev/',
+            {
+                method: "POST",
+                body: JSON.stringify(cfvalue),
+            }
+            )
+        ).json();
+
+        if (sendmessage.status) {
+            GEBID("cfbutton").innerHTML = "Sent!";
+
+            localStorage.setItem(
+            "contact-form",
+            JSON.stringify({
+                sent: true,
+                canSendUnix: new Date().getTime() + 43200000,
+            })
+            );
+        } else {
+            throw new Error("Error");
+        }
+        } catch (error) {
+        console.log(error);
+        GEBID("cfbutton").innerHTML = "Error!";
+        }
+      }
+}
+
+function GEBID(id) {
+    return document.getElementById(id);
+}
